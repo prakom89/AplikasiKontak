@@ -24,11 +24,12 @@ public class KontakController {
 //     * Menambahkan kontak baru ke database.
 //     * @param kontak Objek kontak yang akan ditambahkan.
 //     */
+
     public static void tambahKontak(Kontak kontak) {
         String sql = "INSERT INTO kontak (nama, nomor_telepon, kategori) VALUES (?, ?, ?)";
 
         try (Connection conn = SQLiteConnection.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, kontak.getNama());
             pstmt.setString(2, kontak.getNomorTelepon());
@@ -50,8 +51,8 @@ public class KontakController {
         List<Kontak> daftarKontak = new ArrayList<>();
 
         try (Connection conn = SQLiteConnection.connect();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
                 Kontak kontak = new Kontak(
@@ -77,7 +78,7 @@ public class KontakController {
         String sql = "UPDATE kontak SET nama = ?, nomor_telepon = ?, kategori = ? WHERE id = ?";
 
         try (Connection conn = SQLiteConnection.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, kontak.getNama());
             pstmt.setString(2, kontak.getNomorTelepon());
@@ -99,7 +100,7 @@ public class KontakController {
         String sql = "DELETE FROM kontak WHERE id = ?";
 
         try (Connection conn = SQLiteConnection.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, id);
             pstmt.executeUpdate();
@@ -120,7 +121,7 @@ public class KontakController {
         List<Kontak> hasilPencarian = new ArrayList<>();
 
         try (Connection conn = SQLiteConnection.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, "%" + keyword + "%");
             pstmt.setString(2, "%" + keyword + "%");
@@ -140,5 +141,31 @@ public class KontakController {
         }
 
         return hasilPencarian;
+    }
+
+    public static List<Kontak> getKontakByKategori(String kategori) {
+        List<Kontak> daftarKontak = new ArrayList<>();
+        String sql = "SELECT * FROM kontak WHERE kategori = ?";
+
+        try (Connection conn = SQLiteConnection.connect();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, kategori);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                Kontak kontak = new Kontak(
+                        rs.getInt("id"),
+                        rs.getString("nama"),
+                        rs.getString("nomor_telepon"),
+                        rs.getString("kategori")
+                );
+                daftarKontak.add(kontak);
+            }
+        } catch (SQLException e) {
+            System.out.println("Gagal mengambil data kontak berdasarkan kategori: " + e.getMessage());
+        }
+
+        return daftarKontak;
     }
 }

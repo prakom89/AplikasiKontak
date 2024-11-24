@@ -6,6 +6,7 @@
 package views;
 
 import controllers.KontakController;
+import java.awt.event.ItemEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JDialog;
@@ -71,7 +72,17 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel3.setText("Kategori");
 
-        cmbKategori.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Keluarga", "Teman", "Kerja" }));
+        cmbKategori.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Semua", "Keluarga", "Teman", "Kerja" }));
+        cmbKategori.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cmbKategoriItemStateChanged(evt);
+            }
+        });
+        cmbKategori.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbKategoriActionPerformed(evt);
+            }
+        });
 
         btnTambah.setText("Tambah");
         btnTambah.addActionListener(new java.awt.event.ActionListener() {
@@ -163,6 +174,12 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(btnSimpan))
                 .addContainerGap(22, Short.MAX_VALUE))
         );
+
+        jScrollPane1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jScrollPane1MouseClicked(evt);
+            }
+        });
 
         tblKontak.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -384,48 +401,72 @@ public class MainFrame extends javax.swing.JFrame {
             return;
         }
 
-        try {
-            // Cari kontak berdasarkan kata kunci
-            List<Kontak> hasilPencarian = KontakController.cariKontak(keyword);
+        // Cari data kontak berdasarkan keyword
+        List<Kontak> hasilPencarian = KontakController.cariKontak(keyword);
 
-            if (hasilPencarian.isEmpty()) { // Jika tidak ada hasil
-                JOptionPane.showMessageDialog(this, "Tidak ada kontak yang ditemukan.", "Informasi", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                // Tampilkan hasil pencarian dalam dialog modal
-                tampilkanHasilPencarian(hasilPencarian);
-            }
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Terjadi kesalahan saat mencari kontak: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            ex.printStackTrace();
+        if (hasilPencarian.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Tidak ada kontak yang ditemukan.", "Informasi", JOptionPane.INFORMATION_MESSAGE);
+            loadKontakKeTabel();
+        } else {
+            // Tampilkan hasil pencarian di JTable
+            tampilkanHasilPencarian(hasilPencarian);
         }
     }//GEN-LAST:event_btnCariActionPerformed
 
-    private void tampilkanHasilPencarian(List<Kontak> hasilPencarian) {
-        // Buat dialog
-        JDialog dialog = new JDialog(this, "Hasil Pencarian", true);
-        dialog.setSize(600, 400);
-        dialog.setLocationRelativeTo(this);
+    private void cmbKategoriActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbKategoriActionPerformed
 
-        // Buat tabel untuk menampilkan hasil pencarian
-        DefaultTableModel model = new DefaultTableModel(new Object[]{"ID", "Nama", "Nomor Telepon", "Kategori"}, 0);
-        JTable table = new JTable(model);
+    }//GEN-LAST:event_cmbKategoriActionPerformed
 
-        // Tambahkan data hasil pencarian ke tabel
-        for (Kontak kontak : hasilPencarian) {
-            model.addRow(new Object[]{
-                kontak.getId(),
+    private void cmbKategoriItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbKategoriItemStateChanged
+        if (evt.getStateChange() == ItemEvent.SELECTED) { // Periksa apakah item dipilih
+            String kategoriDipilih = (String) evt.getItem();
+
+            if (kategoriDipilih.equals("Semua")) {
+                // Tampilkan semua data
+                loadKontakKeTabel();
+            } else {
+                // Tampilkan data berdasarkan kategori
+                loadKontakBerdasarkanKategori(kategoriDipilih);
+            }
+        }
+    }//GEN-LAST:event_cmbKategoriItemStateChanged
+
+    private void jScrollPane1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jScrollPane1MouseClicked
+        // Panggil metode untuk memuat data penuh dari database
+        loadKontakKeTabel();
+    }//GEN-LAST:event_jScrollPane1MouseClicked
+
+    private void loadKontakBerdasarkanKategori(String kategori) {
+        // Bersihkan tabel terlebih dahulu
+        DefaultTableModel tableModel = (DefaultTableModel) tblKontak.getModel();
+        tableModel.setRowCount(0);
+
+        // Ambil data dari database berdasarkan kategori
+        List<Kontak> daftarKontak = KontakController.getKontakByKategori(kategori);
+
+        // Tambahkan data ke tabel
+        for (Kontak kontak : daftarKontak) {
+            tableModel.addRow(new Object[]{
                 kontak.getNama(),
                 kontak.getNomorTelepon(),
                 kontak.getKategori()
             });
         }
+    }
 
-        // Tambahkan tabel ke JScrollPane
-        JScrollPane scrollPane = new JScrollPane(table);
-        dialog.add(scrollPane);
+    private void tampilkanHasilPencarian(List<Kontak> hasilPencarian) {
+        // Bersihkan tabel terlebih dahulu
+        DefaultTableModel tableModel = (DefaultTableModel) tblKontak.getModel();
+        tableModel.setRowCount(0);
 
-        // Tampilkan dialog
-        dialog.setVisible(true);
+        // Tambahkan hasil pencarian ke model tabel
+        for (Kontak kontak : hasilPencarian) {
+            tableModel.addRow(new Object[]{
+                kontak.getNama(),
+                kontak.getNomorTelepon(),
+                kontak.getKategori()
+            });
+        }
     }
 
     /**
