@@ -6,14 +6,25 @@
 package views;
 
 import controllers.KontakController;
+import database.SQLiteConnection;
 import java.awt.event.ItemEvent;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import models.Kontak;
 
 /**
@@ -58,6 +69,8 @@ public class MainFrame extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         tblKontak = new javax.swing.JTable();
         jLabel4 = new javax.swing.JLabel();
+        btnImport = new javax.swing.JButton();
+        btnEksport = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -195,6 +208,20 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel4.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         jLabel4.setText("APLIKASI PENGELOLAAN KONTAK");
 
+        btnImport.setText("Import");
+        btnImport.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnImportActionPerformed(evt);
+            }
+        });
+
+        btnEksport.setText("Eksport");
+        btnEksport.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEksportActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -208,6 +235,12 @@ public class MainFrame extends javax.swing.JFrame {
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(jScrollPane1))
                 .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnImport)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnEksport)
+                .addGap(14, 14, 14))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -217,8 +250,12 @@ public class MainFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnImport)
+                    .addComponent(btnEksport))
+                .addContainerGap(21, Short.MAX_VALUE))
         );
 
         pack();
@@ -274,6 +311,12 @@ public class MainFrame extends javax.swing.JFrame {
 
         if (!nomorTelepon.matches("\\d+")) {
             JOptionPane.showMessageDialog(this, "Nomor Telepon harus berisi angka!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Validasi panjang nomor telepon (misalnya 10 atau 12 digit)
+        if (nomorTelepon.length() != 10 && nomorTelepon.length() != 12) {
+            JOptionPane.showMessageDialog(this, "Nomor Telepon harus memiliki panjang 10 atau 12 digit.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -436,6 +479,89 @@ public class MainFrame extends javax.swing.JFrame {
         loadKontakKeTabel();
     }//GEN-LAST:event_jScrollPane1MouseClicked
 
+    private void btnEksportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEksportActionPerformed
+        // Menyimpan file CSV
+        String filePath = JOptionPane.showInputDialog(this, "Masukkan nama file CSV", "kontak.csv");
+
+        if (filePath == null || filePath.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Nama file tidak boleh kosong!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+            // Menulis header (kolom)
+            TableModel model = tblKontak.getModel();
+            int columnCount = model.getColumnCount();
+
+            for (int i = 0; i < columnCount; i++) {
+                writer.write(model.getColumnName(i)); // Nama kolom
+                if (i < columnCount - 1) {
+                    writer.write(","); // Pisahkan dengan koma
+                }
+            }
+            writer.newLine();
+
+            // Menulis data baris
+            int rowCount = model.getRowCount();
+            for (int i = 0; i < rowCount; i++) {
+                for (int j = 0; j < columnCount; j++) {
+                    writer.write(model.getValueAt(i, j).toString()); // Data di setiap baris
+                    if (j < columnCount - 1) {
+                        writer.write(","); // Pisahkan dengan koma
+                    }
+                }
+                writer.newLine();
+            }
+
+            JOptionPane.showMessageDialog(this, "Data berhasil diekspor ke CSV!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, "Gagal mengekspor data: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        }
+    }//GEN-LAST:event_btnEksportActionPerformed
+
+    private void btnImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImportActionPerformed
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Pilih file CSV");
+
+        // Menampilkan dialog file untuk memilih file CSV
+        int result = fileChooser.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            String filePath = fileChooser.getSelectedFile().getAbsolutePath();
+            imporKontakDariCSV(filePath); // Panggil metode impor
+        }
+    }//GEN-LAST:event_btnImportActionPerformed
+
+    public void imporKontakDariCSV(String filePath) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            String sql = "INSERT INTO kontak (nama, nomor_telepon, kategori) VALUES (?, ?, ?)";
+
+            try (Connection conn = SQLiteConnection.connect();
+                    PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+                // Skip header (kolom)
+                reader.readLine();
+
+                while ((line = reader.readLine()) != null) {
+                    String[] data = line.split(","); // Memisahkan kolom berdasarkan koma
+
+                    if (data.length == 3) {
+                        pstmt.setString(1, data[0].trim()); // Nama
+                        pstmt.setString(2, data[1].trim()); // Nomor Telepon
+                        pstmt.setString(3, data[2].trim()); // Kategori
+                        pstmt.executeUpdate();
+                    }
+                }
+
+                JOptionPane.showMessageDialog(this, "Data berhasil diimpor ke database!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (IOException | SQLException e) {
+            JOptionPane.showMessageDialog(this, "Gagal mengimpor data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+
     private void loadKontakBerdasarkanKategori(String kategori) {
         // Bersihkan tabel terlebih dahulu
         DefaultTableModel tableModel = (DefaultTableModel) tblKontak.getModel();
@@ -507,7 +633,9 @@ public class MainFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCari;
     private javax.swing.JButton btnEdit;
+    private javax.swing.JButton btnEksport;
     private javax.swing.JButton btnHapus;
+    private javax.swing.JButton btnImport;
     private javax.swing.JButton btnSimpan;
     private javax.swing.JButton btnTambah;
     private javax.swing.JComboBox<String> cmbKategori;
