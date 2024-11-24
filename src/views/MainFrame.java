@@ -6,8 +6,11 @@
 package views;
 
 import controllers.KontakController;
+import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import models.Kontak;
@@ -22,6 +25,7 @@ public class MainFrame extends javax.swing.JFrame {
      * Creates new form MainFrame
      */
     private DefaultTableModel tableModel;
+    private List<Integer> listIdKontak = new ArrayList<>();
 
     public MainFrame() {
         initComponents();
@@ -49,6 +53,7 @@ public class MainFrame extends javax.swing.JFrame {
         btnEdit = new javax.swing.JButton();
         btnHapus = new javax.swing.JButton();
         btnCari = new javax.swing.JButton();
+        btnSimpan = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblKontak = new javax.swing.JTable();
         jLabel4 = new javax.swing.JLabel();
@@ -76,10 +81,32 @@ public class MainFrame extends javax.swing.JFrame {
         });
 
         btnEdit.setText("Edit");
+        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditActionPerformed(evt);
+            }
+        });
 
         btnHapus.setText("Hapus");
+        btnHapus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnHapusActionPerformed(evt);
+            }
+        });
 
         btnCari.setText("Cari");
+        btnCari.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCariActionPerformed(evt);
+            }
+        });
+
+        btnSimpan.setText("Simpan");
+        btnSimpan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSimpanActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -89,34 +116,33 @@ public class MainFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2))
+                        .addGap(13, 13, 13))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(btnTambah)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnEdit)
+                        .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnSimpan)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnHapus)
+                        .addComponent(btnHapus, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnCari))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel1)
-                                    .addComponent(jLabel2))
-                                .addGap(13, 13, 13))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel3)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtNomorTelepon)
-                            .addComponent(cmbKategori, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(txtNama))))
+                        .addComponent(btnCari, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtNomorTelepon)
+                    .addComponent(cmbKategori, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(txtNama))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtNama, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1))
@@ -133,8 +159,9 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(btnTambah)
                     .addComponent(btnEdit)
                     .addComponent(btnHapus)
-                    .addComponent(btnCari))
-                .addContainerGap())
+                    .addComponent(btnCari)
+                    .addComponent(btnSimpan))
+                .addContainerGap(22, Short.MAX_VALUE))
         );
 
         tblKontak.setModel(new javax.swing.table.DefaultTableModel(
@@ -161,8 +188,8 @@ public class MainFrame extends javax.swing.JFrame {
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel4)
-                        .addGap(0, 138, Short.MAX_VALUE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -171,9 +198,9 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGap(6, 6, 6)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 291, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -181,8 +208,9 @@ public class MainFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void loadKontakKeTabel() {
-         // Tambahkan data ke tabel
+        // Tambahkan data ke tabel
         DefaultTableModel tableModel = (DefaultTableModel) tblKontak.getModel();
+
         // Pastikan tableModel tidak null
         if (tableModel == null) {
             System.out.println("tableModel belum diinisialisasi.");
@@ -191,6 +219,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         // Bersihkan tabel sebelum memuat data baru
         tableModel.setRowCount(0);
+        listIdKontak.clear();
 
         // Ambil data dari database
         List<Kontak> daftarKontak = KontakController.getSemuaKontak();
@@ -202,6 +231,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         // Tambahkan data ke model tabel
         for (Kontak kontak : daftarKontak) {
+            listIdKontak.add(kontak.getId()); // Simpan ID
             tableModel.addRow(new Object[]{
                 kontak.getNama(),
                 kontak.getNomorTelepon(),
@@ -233,7 +263,7 @@ public class MainFrame extends javax.swing.JFrame {
         // Tambahkan data ke database
         Kontak kontak = new Kontak(0, nama, nomorTelepon, kategori);
         KontakController.tambahKontak(kontak);
-        
+
         // Perbarui tabel di GUI
         loadKontakKeTabel();
 
@@ -248,6 +278,155 @@ public class MainFrame extends javax.swing.JFrame {
 
         JOptionPane.showMessageDialog(this, "Kontak berhasil ditambahkan!", "Sukses", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_btnTambahActionPerformed
+
+    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+        DefaultTableModel tableModel = (DefaultTableModel) tblKontak.getModel();
+        int selectedRow = tblKontak.getSelectedRow(); // Dapatkan indeks baris yang dipilih
+
+        if (selectedRow == -1) { // Tidak ada baris yang dipilih
+            JOptionPane.showMessageDialog(this, "Pilih kontak yang ingin diedit terlebih dahulu.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Ambil data dari baris yang dipilih
+        // Ambil ID berdasarkan indeks baris yang dipilih
+        int id = listIdKontak.get(selectedRow);
+        String nama = (String) tableModel.getValueAt(selectedRow, 0);
+        String nomorTelepon = (String) tableModel.getValueAt(selectedRow, 1);
+        String kategori = (String) tableModel.getValueAt(selectedRow, 2);
+
+        // Tampilkan data di input field untuk diedit
+        txtNama.setText(nama);
+        txtNomorTelepon.setText(nomorTelepon);
+        cmbKategori.setSelectedItem(kategori);
+
+        // Simpan ID yang akan diedit
+        btnEdit.putClientProperty("idToEdit", id);
+    }//GEN-LAST:event_btnEditActionPerformed
+
+    private void btnSimpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpanActionPerformed
+        Integer idToEdit = (Integer) btnEdit.getClientProperty("idToEdit");
+
+        if (idToEdit == null) {
+            JOptionPane.showMessageDialog(this, "Tidak ada kontak yang dipilih untuk diedit.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Ambil data dari input field
+        String nama = txtNama.getText();
+        String nomorTelepon = txtNomorTelepon.getText();
+        String kategori = (String) cmbKategori.getSelectedItem();
+
+        // Validasi input
+        if (nama.isEmpty() || nomorTelepon.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Nama dan Nomor Telepon tidak boleh kosong.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (!nomorTelepon.matches("\\d+")) {
+            JOptionPane.showMessageDialog(this, "Nomor Telepon harus berupa angka.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Perbarui kontak di database
+        Kontak kontak = new Kontak(idToEdit, nama, nomorTelepon, kategori);
+        KontakController.updateKontak(kontak);
+
+        // Perbarui tabel di GUI
+        loadKontakKeTabel();
+
+        // Reset input field
+        txtNama.setText("");
+        txtNomorTelepon.setText("");
+        cmbKategori.setSelectedIndex(0);
+
+        JOptionPane.showMessageDialog(this, "Kontak berhasil diperbarui.", "Sukses", JOptionPane.INFORMATION_MESSAGE);// TODO add your handling code here:
+    }//GEN-LAST:event_btnSimpanActionPerformed
+
+    private void btnHapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHapusActionPerformed
+        DefaultTableModel tableModel = (DefaultTableModel) tblKontak.getModel();
+        int selectedRow = tblKontak.getSelectedRow(); // Ambil baris yang dipilih di tabel
+
+        if (selectedRow == -1) { // Validasi jika tidak ada baris yang dipilih
+            JOptionPane.showMessageDialog(this, "Pilih kontak yang ingin dihapus terlebih dahulu.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Konfirmasi penghapusan
+        int confirm = JOptionPane.showConfirmDialog(this, "Apakah Anda yakin ingin menghapus kontak ini?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
+        if (confirm != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        try {
+            // Ambil ID dari daftar ID
+            int idToDelete = listIdKontak.get(selectedRow);
+
+            // Hapus data dari database
+            KontakController.hapusKontak(idToDelete);
+
+            // Hapus data dari tabel dan daftar ID
+            tableModel.removeRow(selectedRow);
+            listIdKontak.remove(selectedRow);
+
+            JOptionPane.showMessageDialog(this, "Kontak berhasil dihapus.", "Sukses", JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Terjadi kesalahan saat menghapus data: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        }
+    }//GEN-LAST:event_btnHapusActionPerformed
+
+    private void btnCariActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCariActionPerformed
+        String keyword = JOptionPane.showInputDialog(this, "Masukkan kata kunci pencarian:", "Cari Kontak", JOptionPane.QUESTION_MESSAGE);
+
+        if (keyword == null || keyword.trim().isEmpty()) { // Validasi input kosong
+            JOptionPane.showMessageDialog(this, "Kata kunci tidak boleh kosong.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        try {
+            // Cari kontak berdasarkan kata kunci
+            List<Kontak> hasilPencarian = KontakController.cariKontak(keyword);
+
+            if (hasilPencarian.isEmpty()) { // Jika tidak ada hasil
+                JOptionPane.showMessageDialog(this, "Tidak ada kontak yang ditemukan.", "Informasi", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                // Tampilkan hasil pencarian dalam dialog modal
+                tampilkanHasilPencarian(hasilPencarian);
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Terjadi kesalahan saat mencari kontak: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        }
+    }//GEN-LAST:event_btnCariActionPerformed
+
+    private void tampilkanHasilPencarian(List<Kontak> hasilPencarian) {
+        // Buat dialog
+        JDialog dialog = new JDialog(this, "Hasil Pencarian", true);
+        dialog.setSize(600, 400);
+        dialog.setLocationRelativeTo(this);
+
+        // Buat tabel untuk menampilkan hasil pencarian
+        DefaultTableModel model = new DefaultTableModel(new Object[]{"ID", "Nama", "Nomor Telepon", "Kategori"}, 0);
+        JTable table = new JTable(model);
+
+        // Tambahkan data hasil pencarian ke tabel
+        for (Kontak kontak : hasilPencarian) {
+            model.addRow(new Object[]{
+                kontak.getId(),
+                kontak.getNama(),
+                kontak.getNomorTelepon(),
+                kontak.getKategori()
+            });
+        }
+
+        // Tambahkan tabel ke JScrollPane
+        JScrollPane scrollPane = new JScrollPane(table);
+        dialog.add(scrollPane);
+
+        // Tampilkan dialog
+        dialog.setVisible(true);
+    }
 
     /**
      * @param args the command line arguments
@@ -288,6 +467,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JButton btnCari;
     private javax.swing.JButton btnEdit;
     private javax.swing.JButton btnHapus;
+    private javax.swing.JButton btnSimpan;
     private javax.swing.JButton btnTambah;
     private javax.swing.JComboBox<String> cmbKategori;
     private javax.swing.JLabel jLabel1;
